@@ -90,12 +90,16 @@ def load_embeddings_and_faiss():
         vect = FAISS.load_local(faiss_path, embeddings=emb_model)
         return emb_model, vect
     
-    # Build FAISS index silently
+    # Build FAISS index silently (no print or st.* calls)
     df = load_data()
-    vect = FAISS.from_texts(df['combined'].tolist(), embedding=emb_model)  # Note: 'embedding' argument is required
+    if df.empty:
+        return emb_model, None
+    
+    vect = FAISS.from_texts(df['combined'].tolist(), embedding=emb_model)
     vect.save_local(faiss_path)
     
     return emb_model, vect
+
 
 
 # ----------------------
@@ -103,14 +107,24 @@ def load_embeddings_and_faiss():
 # ----------------------
 @st.cache_resource(show_spinner=False)
 def build_rag_chain():
-    _, vectorstore = load_embeddings_and_faiss()
+    from langchain_groq import ChatGroq
+    from langchain_core.prompts import PromptTemplate
+    from langchain_core.runnables import RunnablePassthrough
+    from langchain_core.output_parsers import StrOutputParser
+
+    emb_model, vectorstore = load_embeddings_and_faiss()
+    
     if vectorstore is None:
-        st.error("❌ FAISS vector store not found.")
+        # Show a clean error inside the Chatbot page only
+        st.warning("❌ FAISS vector store not loaded. The chatbot will not work until the index is built.")
         return None
 
-    from langchain_groq import ChatGroq
-    llm = ChatGroq(groq_api_key=GROQ_API_KEY, model_name="llama-3.1-8b-instant", temperature=0.2)
-    
+    llm = ChatGroq(
+        groq_api_key=GROQ_API_KEY,
+        model_name="llama-3.1-8b-instant",
+        temperature=0.2
+    )
+
     prompt = PromptTemplate.from_template("""
 You are an expert IT career assistant.
 Answer clearly and professionally using ONLY the context.
@@ -124,14 +138,18 @@ Question:
 
 Final Answer:
 """)
+
     retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+
     rag_chain = (
         {"context": retriever, "question": RunnablePassthrough()}
         | prompt
         | llm
         | StrOutputParser()
     )
+
     return rag_chain
+
 
 # ----------------------
 # 7️⃣ Load dataset
