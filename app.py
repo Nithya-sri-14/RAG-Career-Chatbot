@@ -81,28 +81,22 @@ def load_flan_llm():
 # 5️⃣ Load Embeddings and FAISS (Auto-build if missing)
 # ----------------------
 FAISS_PATH = "faiss_index"
-
 @st.cache_resource(show_spinner=False)
 def load_embeddings_and_faiss():
     emb_model = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-MiniLM-L3-v2")
+    faiss_path = os.path.join(BASE_PATH, "faiss_index")
     
-    # If FAISS exists, try loading
-    if os.path.exists(os.path.join(FAISS_PATH, "index.faiss")):
-        try:
-            vect = FAISS.load_local(FAISS_PATH, embedding=emb_model)
-            return emb_model, vect
-        except Exception as e:
-            st.warning(f"⚠️ Could not load FAISS index: {e}")
-
-    # Build FAISS from dataset
-    st.info("🔨 Building FAISS index from dataset...")
-    dataset = load_dataset("DevilsLord/It_job_roles_skills_certifications")
-    df = dataset['train'].to_pandas()
-    df['combined'] = df['Job Description'].fillna('') + " " + df['Skills'].fillna('') + " " + df['Certifications'].fillna('')
-    vect = FAISS.from_texts(df['combined'].tolist(), embedding=emb_model)
-    vect.save_local(FAISS_PATH)
-    st.success(f"✅ FAISS vector store built and saved to {FAISS_PATH}")
+    if os.path.exists(faiss_path):
+        vect = FAISS.load_local(faiss_path, embeddings=emb_model)
+        return emb_model, vect
+    
+    # Build FAISS index silently
+    df = load_data()
+    vect = FAISS.from_texts(df['combined'].tolist(), embedding=emb_model)  # Note: 'embedding' argument is required
+    vect.save_local(faiss_path)
+    
     return emb_model, vect
+
 
 # ----------------------
 # 6️⃣ Build RAG Chain
