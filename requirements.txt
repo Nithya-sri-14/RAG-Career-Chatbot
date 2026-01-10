@@ -1,0 +1,14 @@
+streamlit
+pandas
+datasets
+sentence-transformers
+transformers
+torch
+langchain
+langchain-community
+langchain-groq
+faiss-cpu
+docx2txt
+python-pptx
+PyMuPDF
+huggingface-hub
