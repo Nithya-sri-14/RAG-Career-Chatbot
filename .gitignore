@@ -1,14 +1,3 @@
-# Secrets
-.env
 .streamlit/secrets.toml
-
-# Python cache
 __pycache__/
-*.pyc
-.cache/
-
-# FAISS
-faiss_index/
-
-# OS
-.DS_Store
+.env

@@ -14,6 +14,8 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 import streamlit.components.v1 as components
+import os
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # ----------------------
 # 1️⃣ GROQ API Key
