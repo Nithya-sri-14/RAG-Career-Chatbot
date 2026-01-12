@@ -1,3 +1,7 @@
+<img width="2880" height="1800" alt="image" src="https://github.com/user-attachments/assets/69e7db22-83a5-4c14-a4f7-a75a8b14e024" />
+<img width="2880" height="1800" alt="image" src="https://github.com/user-attachments/assets/978fc868-91f6-402f-8e42-7d38f5eb569b" />
+<img width="2880" height="1800" alt="image" src="https://github.com/user-attachments/assets/7b12e425-f66e-43cd-bbfa-dee5a24ea77f" />
+
 # 🤖 AI-Powered Career Assistant
 
 An end-to-end **AI-driven Resume–Job Matching & IT Career Guidance Platform** that helps job seekers analyze their resumes, discover suitable IT job roles, and get instant career-related answers using **NLP, Semantic Search, and RAG-based Chatbots**.
